@@ -39,25 +39,53 @@ const typeDefs = `#graphql
 const resolvers = {
   Query: {
     todoList: (_, { filter }) => {
-      // Aqui você irá implementar o filtro dos itens
-      console.log(filter);
+      if (filter && filter.name) {
+        return TODO_LIST.filter(item => item.name.includes(filter.name));
+      }
       return TODO_LIST;
     },
   },
   Mutation: {
     addItem: (_, { values: { name } }) => {
-      TODO_LIST.push({
-        id: getRandomInt(),
-        name,
-      });
+      try {
+        const newItem = {
+          id: getRandomInt(),
+          name,
+        };
+        TODO_LIST.push(newItem);
+        return true;
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
     },
     updateItem: (_, { values: { id, name } }) => {
-      // Aqui você irá implementar a edição do item
-      console.log(id, name);
+      try {
+        const itemIndex = TODO_LIST.findIndex(item => item.id === id);
+        if (itemIndex > -1) {
+          TODO_LIST[itemIndex].name = name;
+          return true;
+        } else {
+          throw new Error('Item não encontrado');
+        }
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
     },
     deleteItem: (_, { id }) => {
-      // Aqui você irá implementar a remoção do item
-      console.log(id);
+      try {
+        const itemIndex = TODO_LIST.findIndex(item => item.id === id);
+        if (itemIndex > -1) {
+          TODO_LIST.splice(itemIndex, 1);
+          return true;
+        } else {
+          throw new Error('Item não encontrado');
+        }
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
     },
   },
 };

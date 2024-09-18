@@ -5,8 +5,11 @@ import ListItemText from "@mui/material/ListItemText";
 import { Button, TextField } from "@mui/material";
 import { styled } from "styled-components";
 import { useMutation, useQuery } from "@apollo/client";
-import { ADD_ITEM_MUTATION, GET_TODO_LIST } from "./queries";
+import { ADD_ITEM_MUTATION, GET_TODO_LIST, DELETE_ITEM_MUTATION, UPDATE_ITEM_MUTATION } from "./queries";
 import { Delete, Edit } from "@mui/icons-material";
+import AddIcon from '@mui/icons-material/Add';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { useState } from "react";
 import { getOperationName } from "@apollo/client/utilities";
 
@@ -22,13 +25,17 @@ const Container = styled.div`
 const ContainerTop = styled.form`
   display: flex;
   background-color: #ffffff;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   padding: 20px;
   gap: 15px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
+  width: 92%;
+  max-width: 600px;
+  margin-bottom: 20px;
 `;
 
 const ContainerList = styled.div`
@@ -65,13 +72,11 @@ const ContainerButton = styled.div`
   gap: 10px;
 
   button {
-    padding: 10px 20px;
     border-radius: 8px;
     background-color: #3b82f6;
     color: white;
     border: none;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
 
     &:hover {
       background-color: #2563eb;
@@ -88,9 +93,26 @@ const Title = styled.h1`
 
 export default function CheckboxList() {
   const [item, setItem] = useState("");
-  const { data } = useQuery(GET_TODO_LIST);
+  const [filterStringFromItem, setFilterStringFromItem] = useState("");
+
+  const { data, refetch } = useQuery(GET_TODO_LIST, {
+    variables: { filter: filterStringFromItem ? { name: filterStringFromItem } : {} }, // Passa um objeto vazio se filter for falso
+  });
+
+  const handleFilterClick = () => {
+    setFilterStringFromItem(item);
+    setItem("");
+    refetch({ filter: filterStringFromItem ? { name: filterStringFromItem } : {} });
+  };
+
 
   const [addItem] = useMutation(ADD_ITEM_MUTATION);
+  const [deleteItem] = useMutation(DELETE_ITEM_MUTATION, {
+    awaitRefetchQueries: true,
+    refetchQueries: [getOperationName(GET_TODO_LIST)],
+  });
+  // const [updateItem] = useMutation(UPDATE_ITEM_MUTATION,  refetchOptions);
+
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -106,9 +128,15 @@ export default function CheckboxList() {
     setItem("");
   };
 
-  const onDelete = async (event) => {
-    console.log(onDelete);
-    // Aqui você irá implementar a chamada para o backend de remoção de item
+  const onDelete = async (id) => {
+    try {
+      await deleteItem({
+        variables: { id },
+      });
+      console.log(`Item ${id} deletado com sucesso`);
+    } catch (error) {
+      console.error("Erro ao deletar item:", error);
+    }
   };
 
   const onUpdate = async (event) => {
@@ -116,10 +144,6 @@ export default function CheckboxList() {
     // Aqui você irá implementar a chamada para o backend de edição de item
   };
 
-  const onFilter = async (event) => {
-    console.log(onFilter);
-    // Aqui você irá implementar a chamada para o backend para fazer o filtro
-  };
 
   return (
     <Container>
@@ -128,7 +152,7 @@ export default function CheckboxList() {
         <ContainerTop onSubmit={onSubmit}>
           <TextField
             id="item"
-            label="Digite aqui"
+            label="Nome da tarefa"
             value={item}
             type="text"
             variant="standard"
@@ -139,9 +163,16 @@ export default function CheckboxList() {
               variant="contained"
               sx={{ width: "100%" }}
               color="info"
-              onClick={onFilter}
+              onClick={ handleFilterClick }
             >
               Filtrar
+              <FilterAltIcon sx={{marginLeft: 1}}/>
+            </Button>
+            <Button
+                variant="contained"
+                onClick={() => setFilterStringFromItem("")}
+            >
+              <FilterAltOffIcon />
             </Button>
             <Button
               variant="contained"
@@ -150,11 +181,13 @@ export default function CheckboxList() {
               type="submit"
             >
               Salvar
+              <AddIcon sx={{marginLeft: 1}}/>
             </Button>
           </ContainerButton>
         </ContainerTop>
         <List sx={{ width: "100%" }}>
           <ContainerListItem>
+            {data?.todoList?.length === 0 ? <p>Nenhuma tarefa cadastrada</p>: null}
             {data?.todoList?.map((value, index) => {
               return (
                 <ListItem
@@ -168,9 +201,10 @@ export default function CheckboxList() {
                 >
                   <ListItemButton dense>
                     <ListItemText id={index} primary={value?.name} />
-                    <Edit onClick={onUpdate} />
-                    <Delete onClick={onDelete} />
+                    <Edit onClick={() => onUpdate(value?.id)} />
+                    <Delete onClick={() => onDelete(value?.id)} />
                   </ListItemButton>
+
                 </ListItem>
               );
             })}
