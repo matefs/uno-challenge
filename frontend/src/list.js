@@ -96,7 +96,7 @@ export default function CheckboxList() {
         variables: {
           values: {
             id: newTodo?.id,
-            name: newTodo?.name,
+            name: newTodo?.name.trim(),
           },
         },
       });
