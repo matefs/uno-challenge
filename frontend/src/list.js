@@ -2,7 +2,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField,Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { Container, ContainerTop, ContainerList, ContainerListItem, ContainerButton, Title } from './styles';
 import { useMutation, useQuery } from "@apollo/client";
 import { ADD_ITEM_MUTATION, GET_TODO_LIST, DELETE_ITEM_MUTATION, UPDATE_ITEM_MUTATION } from "./queries";
@@ -14,6 +14,17 @@ import { useState } from "react";
 import { getOperationName } from "@apollo/client/utilities";
 
 export default function CheckboxList() {
+
+  const [newTodo, setNewTodo] = useState({});
+  const [open, setOpen] = useState(false);
+  const handleClickOpen = (id,name) => {
+    setNewTodo({id:id,name:name});
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const [item, setItem] = useState("");
   const [filterStringFromItem, setFilterStringFromItem] = useState("");
 
@@ -43,7 +54,10 @@ export default function CheckboxList() {
     awaitRefetchQueries: true,
     refetchQueries: [getOperationName(GET_TODO_LIST)],
   });
-  // const [updateItem] = useMutation(UPDATE_ITEM_MUTATION,  refetchOptions);
+  const [updateItem] = useMutation(UPDATE_ITEM_MUTATION,  {
+    awaitRefetchQueries: true,
+    refetchQueries: [getOperationName(GET_TODO_LIST)],
+  });
 
 
   const onSubmit = async (event) => {
@@ -77,10 +91,16 @@ export default function CheckboxList() {
     }
   };
 
-  const onUpdate = async (event) => {
-    console.log(onUpdate);
-    // Aqui você irá implementar a chamada para o backend de edição de item
-  };
+    const onUpdate = async () => {
+      await updateItem({
+        variables: {
+          values: {
+            id: newTodo?.id,
+            name: newTodo?.name,
+          },
+        },
+      });
+    };
 
 
   return (
@@ -139,16 +159,37 @@ export default function CheckboxList() {
                 >
                   <ListItemButton dense>
                     <ListItemText id={index} primary={value?.name} />
-                    <Edit onClick={() => onUpdate(value?.id)} />
+                    <Edit onClick={() => {  handleClickOpen(value?.id,value?.name); }} />
                     <Delete onClick={() => onDelete(value?.id)} />
                   </ListItemButton>
 
                 </ListItem>
+
               );
             })}
           </ContainerListItem>
         </List>
       </ContainerList>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Editar Item</DialogTitle>
+        <DialogContent>
+          <TextField
+              variant="outlined"
+              value={newTodo?.name}
+              onChange={(e) => setNewTodo({ ...newTodo, name: e.target.value })}
+              fullWidth
+              sx={{ marginTop: "10px" }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={() => {  onUpdate(newTodo?.id); handleClose(); }} color="primary">
+            Salvar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
