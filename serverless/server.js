@@ -47,6 +47,13 @@ const resolvers = {
   },
   Mutation: {
     addItem: (_, { values: { name } }) => {
+      name = name?.trim();
+      const existingItem = TODO_LIST.find(item => item.name === name);
+
+      if (existingItem) {
+        return false;
+      }
+
       try {
         const newItem = {
           id: getRandomInt(),

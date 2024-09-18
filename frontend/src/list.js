@@ -28,7 +28,17 @@ export default function CheckboxList() {
   };
 
 
-  const [addItem] = useMutation(ADD_ITEM_MUTATION);
+  const [addItem, { loading }] = useMutation(ADD_ITEM_MUTATION, {
+    onCompleted: (data) => {
+      if (!data.addItem) {
+        alert("Item já existe");
+      } else {
+        setItem("");
+      }
+    },
+    onError: (error) => {
+    }
+  });
   const [deleteItem] = useMutation(DELETE_ITEM_MUTATION, {
     awaitRefetchQueries: true,
     refetchQueries: [getOperationName(GET_TODO_LIST)],
@@ -38,6 +48,12 @@ export default function CheckboxList() {
 
   const onSubmit = async (event) => {
     event.preventDefault();
+
+    if (!item.trim()) {
+      alert("O nome do item não pode estar em branco.");
+      return;
+    }
+
     await addItem({
       variables: {
         values: {
