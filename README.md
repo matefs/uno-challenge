@@ -60,3 +60,19 @@ Lembre-se de deixar seu repositório público.
 ### Imagem do projeto final:
 ![image](https://github.com/user-attachments/assets/e7cd80db-181b-4c5d-81ff-c6fdbc4bf5f8)
 
+- Passos para executar o script de iniciar projeto automaticamente:
+-   **Instalar o tmux (Debian based)**
+    ```bash
+    sudo apt install tmux
+    ```
+    
+-   **Dar permissão de execução ao script**
+    ```bash
+    chmod +x iniciar_projetos_automatico.sh
+    ```
+
+-   **Executar o script**
+  
+    ```bash
+    ./iniciar_projetos_automatico.sh
+    ```
