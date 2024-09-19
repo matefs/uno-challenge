@@ -22,6 +22,19 @@ export default function CheckboxList() {
   const [showAlert,setShowAlert] = useState(false);
   const [showAlertMessage,setShowAlertMessage] = useState("");
   const [open, setOpen] = useState(false);
+
+  const [completedItems, setCompletedItems] = useState([]); // Array para armazenar os IDs dos itens concluídos
+
+  const handleItemClick = (itemId) => {
+    setCompletedItems(prevCompletedItems => {
+      if (prevCompletedItems.includes(itemId)) {
+        return prevCompletedItems.filter(id => id !== itemId);
+      } else {
+        return [...prevCompletedItems, itemId];
+      }
+    });
+  };
+
   const handleClickOpen = (id,name) => {
     setNewTodo({id:id,name:name});
     setOpen(true);
@@ -168,24 +181,32 @@ export default function CheckboxList() {
           <ContainerListItem>
             {data?.todoList?.length === 0 ? <p>Nenhuma tarefa cadastrada</p>: null}
             {data?.todoList?.map((value, index) => {
+              const isItemCompleted = completedItems.includes(value?.id);
+
               return (
-                <ListItem
-                  key={index}
-                  disablePadding
-                  sx={{
-                    borderRadius: "5px",
-                    marginTop: "5px",
-                    marginBottom: "5px",
-                  }}
-                >
-                  <ListItemButton dense>
-                    <ListItemText id={index} primary={value?.name} />
-                    <Edit onClick={() => {  handleClickOpen(value?.id,value?.name); }} />
-                    <Delete onClick={() => onDelete(value?.id)} />
-                  </ListItemButton>
-
-                </ListItem>
-
+                  <ListItem
+                      key={index}
+                      disablePadding
+                      sx={{
+                        borderRadius: "5px",
+                        marginTop: "5px",
+                        marginBottom: "5px",
+                      }}
+                  >
+                    <ListItemButton dense >
+                      <ListItemText
+                          id={index}
+                          primary={value?.name}
+                          onClick={() => handleItemClick(value?.id)}
+                          sx={{
+                            textDecoration: isItemCompleted ? 'line-through' : 'none',
+                            color: isItemCompleted ? 'gray' : 'inherit'
+                          }}
+                      />
+                      <Edit onClick={() => { handleClickOpen(value?.id, value?.name); }} />
+                      <Delete onClick={() => onDelete(value?.id)} />
+                    </ListItemButton>
+                  </ListItem>
               );
             })}
           </ContainerListItem>
