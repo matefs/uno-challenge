@@ -18,6 +18,18 @@ function getRandomInt() {
 }
 
 /**
+ * Verifica se já existe um item na lista com o mesmo nome, ignorando espaços em branco.
+ *
+ * @function
+ * @param {string} name - O nome a ser verificado.
+ * @returns {boolean} - Retorna true se o item já existe, false caso contrário.
+ */
+function isDuplicateItem(name) {
+  name = name?.trim();
+  return TODO_LIST.some(item => item.name === name);
+}
+
+/**
  * Define o esquema GraphQL utilizando SDL (Schema Definition Language).
  *
  * @constant
@@ -79,17 +91,14 @@ const resolvers = {
      * @returns {boolean} - Retorna true se o item foi adicionado com sucesso, false caso contrário.
      */
     addItem: (_, { values: { name } }) => {
-      name = name?.trim();
-      const existingItem = TODO_LIST.find(item => item.name === name);
-
-      if (existingItem) {
+      if (isDuplicateItem(name)) {
         return false;
       }
 
       try {
         const newItem = {
           id: getRandomInt(),
-          name,
+          name: name?.trim(),
         };
         TODO_LIST.push(newItem);
         return true;
@@ -115,8 +124,7 @@ const resolvers = {
         const itemIndex = TODO_LIST.findIndex(item => item.id === id);
         if (itemIndex > -1) {
           name = name?.trim();
-          const existingItem = TODO_LIST.find(item => item.name === name);
-          if (existingItem) {
+          if (isDuplicateItem(name)) {
             return false;
           }
 
