@@ -1,17 +1,18 @@
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import { Button, TextField,Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
-import { Container, ContainerTop, ContainerList, ContainerListItem, ContainerButton, Title } from './styles';
-import { useMutation, useQuery } from "@apollo/client";
-import { ADD_ITEM_MUTATION, GET_TODO_LIST, DELETE_ITEM_MUTATION, UPDATE_ITEM_MUTATION } from "./queries";
+import {
+  List, ListItem, ListItemButton, ListItemText,
+  Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions,
+} from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
 import AddIcon from '@mui/icons-material/Add';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
 import { getOperationName } from "@apollo/client/utilities";
+import {
+  ADD_ITEM_MUTATION, GET_TODO_LIST, DELETE_ITEM_MUTATION, UPDATE_ITEM_MUTATION,
+} from "./queries";
+import { Container, ContainerTop, ContainerList, ContainerListItem, ContainerButton, Title } from './styles';
 import SnackbarTemporizado from './Components/Snackbar/SnackbarTemporizado';
 
 
@@ -43,7 +44,7 @@ export default function CheckboxList() {
   };
 
 
-  const [addItem, { loading }] = useMutation(ADD_ITEM_MUTATION, {
+  const [addItem] = useMutation(ADD_ITEM_MUTATION, {
     onCompleted: (data) => {
       if (!data.addItem) {
         setShowAlertMessage("Item já existe");
