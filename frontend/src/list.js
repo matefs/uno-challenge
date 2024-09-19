@@ -1,6 +1,6 @@
 import {
   List, ListItem, ListItemButton, ListItemText,
-  Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions,
+  Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Typography,
 } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
 import AddIcon from '@mui/icons-material/Add';
@@ -34,6 +34,7 @@ export default function CheckboxList() {
       }
     });
   };
+
 
   const handleClickOpen = (id,name) => {
     setNewTodo({id:id,name:name});
@@ -133,6 +134,19 @@ export default function CheckboxList() {
       });
     };
 
+  const totalTasks = data?.todoList?.length;
+  const getDynamicTitle = () => {
+    const pendingTasks = totalTasks - completedItems.length;
+
+    if (pendingTasks <= 0) {
+      return "Tudo concluído, parabéns!";
+    } else if (pendingTasks === 1) {
+      return "Quase lá, só mais 1 tarefa!";
+    } else {
+      return `Você tem ${pendingTasks} tarefas pendentes!`;
+    }
+  };
+
 
   return (
     <Container>
@@ -179,7 +193,7 @@ export default function CheckboxList() {
         </ContainerTop>
         <List sx={{ width: "100%" }}>
           <ContainerListItem>
-            {data?.todoList?.length === 0 ? <p>Nenhuma tarefa cadastrada</p>: null}
+            <Typography variant="h4">{getDynamicTitle()}</Typography>
             {data?.todoList?.map((value, index) => {
               const isItemCompleted = completedItems.includes(value?.id);
 
