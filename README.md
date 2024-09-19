@@ -3,6 +3,7 @@
 
 Parabéns, se você chegou até aqui significa que você está participando do processo seletivo de uma das melhores empresas de tecnologia do mercado!
 
+
 ## Como será o desafio técnico?
 
 Nesse repositório já temos um projeto pré-desenvolvido com as tecnologias que mais utilizamos na UNO, das quais são: 
@@ -54,3 +55,8 @@ REACT_APP_GRAPHQL_URI=http://localhost:4000/graphql
 Esse projeto deverá ser feito um fork dele, que já irá aparecer em seu github para que você nos envie e possamos baixar para analisar o código desenvolvido. 
 
 Lembre-se de deixar seu repositório público.
+
+
+### Imagem do projeto final:
+![image](https://github.com/user-attachments/assets/e7cd80db-181b-4c5d-81ff-c6fdbc4bf5f8)
+
