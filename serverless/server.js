@@ -114,6 +114,12 @@ const resolvers = {
       try {
         const itemIndex = TODO_LIST.findIndex(item => item.id === id);
         if (itemIndex > -1) {
+          name = name?.trim();
+          const existingItem = TODO_LIST.find(item => item.name === name);
+          if (existingItem) {
+            return false;
+          }
+
           TODO_LIST[itemIndex].name = name;
           return true;
         } else {
