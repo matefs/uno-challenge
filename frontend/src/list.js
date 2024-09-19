@@ -166,6 +166,15 @@ export default function CheckboxList() {
           />
           <ContainerButton>
             <Button
+                variant="contained"
+                sx={{ width: "100%" }}
+                color="success"
+                type="submit"
+            >
+              Salvar
+              <AddIcon sx={{marginLeft: 1}}/>
+            </Button>
+            <Button
               variant="contained"
               sx={{ width: "100%" }}
               color="info"
@@ -179,15 +188,6 @@ export default function CheckboxList() {
                 onClick={() => setFilterStringFromItem("")}
             >
               <FilterAltOffIcon />
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ width: "100%" }}
-              color="success"
-              type="submit"
-            >
-              Salvar
-              <AddIcon sx={{marginLeft: 1}}/>
             </Button>
           </ContainerButton>
         </ContainerTop>
