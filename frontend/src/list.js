@@ -12,10 +12,14 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { useState } from "react";
 import { getOperationName } from "@apollo/client/utilities";
+import SnackbarTemporizado from './Components/Snackbar/SnackbarTemporizado';
+
 
 export default function CheckboxList() {
 
   const [newTodo, setNewTodo] = useState({});
+  const [showAlert,setShowAlert] = useState(false);
+  const [showAlertMessage,setShowAlertMessage] = useState("");
   const [open, setOpen] = useState(false);
   const handleClickOpen = (id,name) => {
     setNewTodo({id:id,name:name});
@@ -42,7 +46,10 @@ export default function CheckboxList() {
   const [addItem, { loading }] = useMutation(ADD_ITEM_MUTATION, {
     onCompleted: (data) => {
       if (!data.addItem) {
-        alert("Item já existe");
+        setShowAlertMessage("Item já existe");
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 1000);
+
       } else {
         setItem("");
       }
@@ -64,7 +71,9 @@ export default function CheckboxList() {
     event.preventDefault();
 
     if (!item.trim()) {
-      alert("O nome do item não pode estar em branco.");
+      setShowAlertMessage("O nome do item não pode estar em branco.");
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 1000);
       return;
     }
 
@@ -105,6 +114,9 @@ export default function CheckboxList() {
 
   return (
     <Container>
+      {showAlert && (
+          <SnackbarTemporizado message={showAlertMessage} duration={3000} />
+      )}
       <ContainerList>
         <Title>TODO LIST</Title>
         <ContainerTop onSubmit={onSubmit}>
