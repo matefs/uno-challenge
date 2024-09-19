@@ -101,6 +101,14 @@ export default function CheckboxList() {
   };
 
     const onUpdate = async () => {
+      const trimmedName = newTodo?.name.trim();
+
+      if (!trimmedName) {
+        setShowAlertMessage("O nome do item não pode estar em branco.");
+        setShowAlert(true);
+        return;
+      }
+
       await updateItem({
         variables: {
           values: {
